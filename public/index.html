@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080a10">
+  <title>DARK ZOXS AI</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      color-scheme: dark;
+      --bg: #080a10;
+      --panel: #10131d;
+      --border: #242a3a;
+      --text: #f4f6ff;
+      --muted: #9199af;
+      --accent: #7775ff;
+    }
+
+    body {
+      margin: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    button, textarea { font: inherit; }
+
+    .app {
+      display: flex;
+      height: 100%;
+      max-width: 1500px;
+      margin: auto;
+    }
+
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #0c0e16;
+      border-left: 1px solid var(--border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #7775ff, #282b76);
+      font-weight: 900;
+      box-shadow: 0 0 25px #7775ff30;
+    }
+
+    .brand-name { font-size: 17px; font-weight: 850; }
+    .brand-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    .new-chat {
+      background: #171a27;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: white;
+      padding: 12px;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    .side-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .side-note {
+      margin-top: auto;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    header {
+      min-height: 72px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title { font-weight: 750; }
+    .status { color: #73e4b0; font-size: 12px; margin-top: 5px; }
+
+    .model {
+      font-size: 11px;
+      color: #c6c5ff;
+      background: #7775ff16;
+      border: 1px solid #7775ff40;
+      padding: 8px 10px;
+      border-radius: 20px;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 18px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome {
+      max-width: 650px;
+      margin: 8vh auto 30px;
+      text-align: center;
+    }
+
+    .welcome-logo {
+      width: 74px;
+      height: 74px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 22px;
+      font-size: 27px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #7775ff, #24265b);
+      box-shadow: 0 0 55px #7775ff25;
+    }
+
+    h1 { font-size: clamp(25px, 5vw, 37px); margin: 0 0 12px; }
+    .welcome p { color: var(--muted); line-height: 1.9; font-size: 14px; }
+
+    .suggestions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .suggestion {
+      padding: 14px;
+      text-align: right;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      cursor: pointer;
+      line-height: 1.7;
+    }
+
+    .suggestion:hover, .new-chat:hover { border-color: var(--accent); }
+    .suggestion span { display: block; color: var(--muted); font-size: 12px; }
+
+    .message {
+      max-width: 780px;
+      margin: 0 auto 23px;
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #1a1d2c;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .message.user .avatar { background: #343269; }
+
+    .bubble {
+      min-width: 0;
+      max-width: 100%;
+      padding: 12px 15px;
+      border-radius: 5px 15px 15px 15px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      line-height: 1.9;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .message.user .bubble {
+      background: #17182a;
+      border-color: #343353;
+    }
+
+    .composer-wrap {
+      padding: 12px 18px 18px;
+      border-top: 1px solid var(--border);
+      background: #080a10;
+    }
+
+    .composer {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #30364a;
+      background: #11141e;
+      border-radius: 17px;
+      transition: border-color .2s;
+    }
+
+    .composer:focus-within { border-color: var(--accent); }
+
+    textarea {
+      flex: 1;
+      min-width: 0;
+      max-height: 150px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: white;
+      padding: 9px 5px;
+      line-height: 1.7;
+    }
+
+    textarea::placeholder { color: #777f96; }
+
+    .send {
+      width: 43px;
+      height: 43px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .send:disabled { opacity: .5; cursor: not-allowed; }
+
+    .disclaimer {
+      max-width: 800px;
+      margin: 10px auto 0;
+      color: #737b90;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    .typing { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 650px) {
+      .sidebar { display: none; }
+      header { min-height: 63px; padding: 12px 15px; }
+      .messages { padding: 16px 12px; }
+      .welcome { margin-top: 7vh; }
+      .suggestions { gap: 8px; }
+      .suggestion { padding: 10px; font-size: 12px; }
+      .composer-wrap { padding: 10px 10px 14px; }
+      .model { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">Z</div>
+        <div>
+          <div class="brand-name">DARK ZOXS AI</div>
+          <div class="brand-sub">YOUR INTELLIGENT ASSISTANT</div>
+        </div>
+      </div>
+
+      <button class="new-chat" id="newChat">＋ محادثة جديدة</button>
+      <div class="side-label">مساحة العمل</div>
+      <div class="side-note">
+        <strong>مرحبًا بك في DARK ZOXS</strong>
+        <br>
+        مساعدك للبرمجة والتعلم والأفكار. تأكد من مراجعة المعلومات المهمة قبل الاعتماد عليها.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header>
+        <div>
+          <div class="header-title">DARK ZOXS AI</div>
+          <div class="status">● واجهة المحادثة جاهزة</div>
+        </div>
+        <div class="model">AI ASSISTANT</div>
+      </header>
+
+      <section class="messages" id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="welcome-logo">Z</div>
+          <h1>أهلًا بك في <span style="color:#8987ff">DARK ZOXS</span></h1>
+          <p>
+            مساعدك الذكي للبرمجة، والتعلم، وحل المشكلات.
+            اكتب فكرتك وابدأ المحادثة.
+          </p>
+
+          <div class="suggestions">
+            <button class="suggestion" data-prompt="ساعدني في إنشاء موقع احترافي باستخدام HTML وCSS">
+              💻 تطوير المواقع
+              <span>أنشئ موقعك خطوة بخطوة</span>
+            </button>
+            <button class="suggestion" data-prompt="اشرح لي الذكاء الاصطناعي بطريقة بسيطة مع أمثلة">
+              🧠 تعلّم الذكاء الاصطناعي
+              <span>افهم التقنية من البداية</span>
+            </button>
+            <button class="suggestion" data-prompt="اكتب لي كود JavaScript بسيط واشرح كل سطر">
+              ⚡ تعلّم البرمجة
+              <span>كود مع شرح واضح</span>
+            </button>
+            <button class="suggestion" data-prompt="ساعدني في التخطيط لمشروع تقني ناجح">
+              🚀 أفكار المشاريع
+              <span>حوّل الفكرة إلى خطة</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="composer-wrap">
+        <form class="composer" id="chatForm">
+          <textarea id="prompt" rows="1" maxlength="10000"
+            placeholder="اكتب رسالتك إلى DARK ZOXS AI..." required></textarea>
+          <button class="send" id="send" type="submit" aria-label="إرسال">➤</button>
+        </form>
+        <div class="disclaimer">
+          قد يخطئ الذكاء الاصطناعي. لا تشارك كلمات المرور أو مفاتيحك السرية في المحادثة.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const messages = document.getElementById("messages");
+    const welcome = document.getElementById("welcome");
+    const form = document.getElementById("chatForm");
+    const promptBox = document.getElementById("prompt");
+    const sendButton = document.getElementById("send");
+
+    let history = [];
+    let busy = false;
+
+    function addMessage(role, text, extraClass = "") {
+      const row = document.createElement("div");
+      row.className = `message ${role} ${extraClass}`;
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = role === "user" ? "أنت" : "Z";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      row.append(avatar, bubble);
+      messages.appendChild(row);
+      messages.scrollTop = messages.scrollHeight;
+      return { row, bubble };
+    }
+
+    async function sendMessage(text) {
+      text = text.trim();
+      if (!text || busy) return;
+
+      busy = true;
+      sendButton.disabled = true;
+      promptBox.disabled = true;
+      welcome?.remove();
+
+      addMessage("user", text);
+      history.push({ role: "user", content: text });
+
+      const pending = addMessage("assistant", "جاري التفكير...");
+      pending.bubble.classList.add("typing");
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "تعذر الاتصال بالخادم.");
+        }
+
+        pending.bubble.classList.remove("typing");
+        pending.bubble.textContent = data.reply;
+        history.push({ role: "assistant", content: data.reply });
+
+        // Prevent unbounded conversation growth in the browser.
+        if (history.length > 20) history = history.slice(-20);
+      } catch (error) {
+        pending.bubble.classList.remove("typing");
+        pending.bubble.textContent =
+          "حصل خطأ: " + error.message +
+          "\nتأكد من تشغيل الخادم وإعداد مفتاح الذكاء الاصطناعي.";
+      } finally {
+        busy = false;
+        sendButton.disabled = false;
+        promptBox.disabled = false;
+        promptBox.focus();
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const text = promptBox.value;
+      promptBox.value = "";
+      promptBox.style.height = "auto";
+      sendMessage(text);
+    });
+
+    promptBox.addEventListener("input", () => {
+      promptBox.style.height = "auto";
+      promptBox.style.height =
+        Math.min(promptBox.scrollHeight, 150) + "px";
+    });
+
+    promptBox.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    document.querySelectorAll("[data-prompt]").forEach(button => {
+      button.addEventListener("click", () => {
+        promptBox.value = button.dataset.prompt;
+        form.requestSubmit();
+      });
+    });
+
+    document.getElementById("newChat").addEventListener("click", () => {
+      messages.replaceChildren();
+      const intro = document.createElement("div");
+      intro.className = "welcome";
+      intro.innerHTML =
+        '<div class="welcome-logo">Z</div>' +
+        '<h1>محادثة جديدة</h1>' +
+        '<p>اكتب رسالتك للبدء.</p>';
+      messages.appendChild(intro);
+      history = [];
+      promptBox.value = "";
+      promptBox.focus();
+    });
+  </script>
+</body>
+</html>
